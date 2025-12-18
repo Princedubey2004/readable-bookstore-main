@@ -1,0 +1,131 @@
+{% extends 'administrator/layout.html' %}
+{% load static %}
+
+{% block title %}
+
+{% endblock %}
+
+
+
+{% block head %}
+
+<!-- JQuery -->
+
+
+  
+
+{% endblock %}
+
+
+
+
+{% block content %}
+
+
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class="d-flex justify-content-between ">
+    <h6 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / Order Mangement / </span>Payments </h6>
+  </div>
+
+  {% if 'search' in request.path %}
+  <div class="col-12 text-center mb-5">
+    <h4 class="search-heading fw-normal">SEARCH RESULTS</h4>
+    <p class="text-muted">{{ payment_count }} items found for keyword '{{ request.GET.keyword }}'</p>
+  </div>
+  {% endif %}
+
+
+
+  <div class="card mt-5">
+    <h5 class="card-header">Payments</h5>
+    <div class="table-responsive text-nowrap">
+      {% if payments %}
+      <table class="table " id="paymentTable">
+        <thead>
+          <tr>
+            <th>SN</th>
+            <th>Payment ID</th>
+            <th>Order ID</th>
+            <th>Payment Method</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for payment in payments %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td><span class="name">{{ payment.payment_id }}</span></td>
+            {% for order in orders %}
+            {% if order.payment.payment_id == payment.payment_id %}
+            <td><span class="email ">{{ order.order_id }}</span></td>
+            {% endif %}
+            {% endfor %}
+            
+            <td><span class="name">{{ payment.payment_method }}</span></td>
+            <td><span class="name">{{ payment.amount }}</span></td>
+            <td><span class="name">{{ payment.status }}</span></td>
+            
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <h4 class="text-center py-5 "> No Payments Found</h4>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<!-- paginator -->
+<nav aria-label="Page navigation example">
+  {% if payments.has_other_pages %}
+  <ul class="pagination justify-content-center">
+    {% if payments.has_previous %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ payments.previous_page_number}}" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="#" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+    {% endif %}
+
+    {% for i in payments.paginator.page_range%}
+    {% if payments.number == i %}
+    <li class="page-item active"><a class="page-link" href="#">{{i}}</a></li>
+    {% else %}
+    <li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
+    {% endif %}
+    {% endfor %}
+
+    {% if payments.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ payments.next_page_number}}" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="#" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+    {% endif %}
+  </ul>
+  {% endif %}
+</nav>
+
+{% endblock %}
+
+
+
+{% block script %}
+
+
+{% endblock %}

@@ -1,0 +1,145 @@
+.container-fluid{
+  border-radius: 0 !important;
+}
+
+.container-checkout {
+  margin-bottom: 5rem;
+  padding: 0 7rem !important;
+}
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.book {
+  width: 15%;
+}
+
+.book img {
+  width: 100%;
+}
+
+header {
+  padding: 20px 0px;
+}
+
+header .active {
+  font-weight: 700;
+  position: relative;
+}
+
+header .active .fa-check {
+  position: absolute;
+  left: 44%;
+  bottom: -27px;
+  background-color: #fff;
+  font-size: 0.7rem;
+  padding: 5px;
+  border: 1px solid #008000;
+  border-radius: 50%;
+  color: #008000;
+}
+
+.progress {
+  height: 2px;
+  background-color: #ccc;
+}
+
+.progress div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress .progress-bar {
+  width: 70%;
+}
+
+.order-summery {
+  background-color: #8e8c6d23;
+  padding: 1.5rem;
+}
+
+
+label.box {
+  cursor: pointer;
+}
+
+#razorpay:checked~label.first,
+#payOnDelivery:checked~label.first,
+#card:checked~label.first {
+  border-color: #8b8538
+}
+
+#razorpay:checked~label.first .circle,
+#payOnDelivery:checked~label.first .circle,
+#card:checked~label.first .circle {
+  border: 6px solid #8e8c6d;
+  background-color: #fff
+}
+
+
+label.box .course {
+  display: flex;
+  justify-content: space-between;
+  width: 100%
+}
+
+label.box .circle {
+  height: 1.5rem;
+  max-width: 1.5rem;
+  width: 100%;
+  border-radius: 50% !important;
+  margin-right: 15px;
+  border: 2px solid #ddd;
+  display: inline-block
+}
+
+input[type="radio"] {
+  display: none
+}
+
+
+
+@media(min-width:768px) and (max-width: 991px) {
+  .progress .progress-bar {
+    width: 79%;
+  }
+
+  .container-checkout {
+    padding: 0 5.rem !important;
+  }
+
+}
+
+@media(min-width: 576px) and (max-width: 767px) {
+  .progress .progress-bar {
+    width: 85%;
+  }
+
+  .container-checkout {
+    padding: 0 4rem !important;
+  }
+
+}
+
+@media(max-width: 575px) {
+  .progress .progress-bar {
+    width: 70%;
+  }
+
+  .container-checkout {
+    padding: 0 2rem !important;
+  }
+
+  header .active .fa-check {
+    left: 37%;
+    padding: 3px;
+    bottom: -20px;
+    font-size: 0.5rem;
+  }
+
+}

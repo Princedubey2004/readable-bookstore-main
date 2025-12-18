@@ -1,0 +1,449 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+
+{% block head %}
+
+<title>Products</title>
+<link rel="stylesheet" href="{% static 'styles/product-view.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+  integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<script src="https://kit.fontawesome.com/636cd13699.js" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css"></script>
+
+{% endblock %}
+
+
+{% block body %}
+
+<div class="container mt-5 mb-5">
+  <div class="card">
+    <div class="row g-0">
+      <div class="col-md-3">
+        <div class="d-flex flex-column justify-content-bottom">
+          <div class="main_image ">
+            <img src="{{ product.cover_image.url }}" class="drift-demo-trigger" alt="{{product.name}} cover image"
+              data-zoom="{{ product.cover_image.url }}" id="main_product_image" height="280">
+
+          </div>
+          <div class="thumbnail_images">
+            <ul id="thumbnail" class="ps-0">
+              <li><img onclick="changeImage(this)" src="{{ product.cover_image.url }}" alt="{{product.name}} image" height="50"></li>
+              {% if product.image1 %}
+              <li><img onclick="changeImage(this)" src="{{ product.image1.url }}" alt="{{product.name}} image" height="50"></li>
+              {% endif %}
+              {% if product.image2 %}
+              <li><img onclick="changeImage(this)" src="{{ product.image2.url }}" alt="{{product.name}} image" height="50"></li>
+              {% endif %}
+              {% if product.image3 %}
+              <li><img onclick="changeImage(this)" src="{{ product.image3.url }}" alt="{{product.name}} image" height="50"></li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-9 ">
+        <!-- <form action="{% url 'add-to-cart' product_id=product.id %}" method="POST" class="h-100"> -->
+          <div class="detail p-3 right-side d-flex flex-column justify-content-between h-100 pt-4" id="detail">
+            <div class="content-top d-flex flex-column justify-content-start h-100">
+              <div class="d-flex justify-content-between align-items-center">
+                <h3>{{ product.name }}</h3>
+              </div>
+              <h6>Author: {{ product.author }}</h6>
+
+              <div class="rating-star mb-4">
+                <span>
+                  <i class="fa fa-star{% if product.average_review < 0.5 %}-o{% elif product.average_review >= 0.5 and product.average_review < 1 %}-half-o {% endif %}"
+                    aria-hidden="true"></i>
+                  <i class="fa fa-star{% if product.average_review < 1.5 %}-o{% elif product.average_review >= 1.5 and product.average_review < 2 %}-half-o {% endif %}"
+                    aria-hidden="true"></i>
+                  <i class="fa fa-star{% if product.average_review < 2.5 %}-o{% elif product.average_review >= 2.5 and product.average_review < 3 %}-half-o {% endif %}"
+                    aria-hidden="true"></i>
+                  <i class="fa fa-star{% if product.average_review < 3.5 %}-o{% elif product.average_review >= 3.5 and product.average_review < 4 %}-half-o {% endif %}"
+                    aria-hidden="true"></i>
+                  <i class="fa fa-star{% if product.average_review < 4.5 %}-o{% elif product.average_review >= 4.5 and product.average_review < 5 %}-half-o {% endif %}"
+                    aria-hidden="true"></i>
+                </span>
+                <span class="text-muted">
+                  ( {{ product.review_count}} {% if product.review_count == 1 %} Rating {% else %} Ratings {% endif %} )
+                </span>
+              </div>
+
+              {% if product.Publisher %}
+              <p>Publisher: {{ product.Publisher}}</p>
+              {% endif %}
+              {% if product.release_date %}
+              <p>Released: {{ product.release_date }}</p>
+              {% endif %}
+              <div class="varitaion-group my-3 d-flex justify-content-start">
+                {% for i in product.variation_set.all %}
+                <div class="form-variation me-2">
+                  <input type="radio" class="btn-check variation-option" name="variation-option" id="{{ i.variation_value }}" required
+                    value="{{ i.variation_value }}" autocomplete="off" {% if forloop.counter == 1 %} checked {% endif %}>
+                  <label class=" btn btn-outline-secondary btn-invert" for="{{ i.variation_value | lower }}">{{ i.variation_value | capfirst }}</label>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="content-bottom d-flex flex-column justify-content-end h-100 ">
+              {% if product.offer_price == product.price %}
+              <h4>₹ {{product.price}}</h4>
+              {% else %}
+              <div>
+                <span class="h4">₹ {{product.offer_price}} </span>
+                <span class="text-muted small" style="text-decoration: line-through;">₹ {{product.price}}</span>
+                <span class="text-success small"> ( {{ product.offer }}% OFF ) </span>
+              </div>
+              {% endif %}
+
+              {% if product.stock > 0 %}
+
+
+              {% if product.stock < 10 and product.stock > 0 %}
+                <p class="text-danger my-2">
+                  Only {{ product.stock}} quantity left.
+                </p>
+                {% else %}
+                <p class="text-success my-2 ">Available</p>
+                {% endif %}
+                <p>Ships within 2-4 Business Days</p>
+
+
+                {% endif %}
+
+
+                {% if product.stock < 1 %} <h3 class='text-danger mt-2'>
+                  Out of Stock
+                  </h3>
+                  {% endif %}
+
+                  <div class="buttons d-flex flex-row mt-3 gap-3">
+                    {% if product.stock < 1 or not product.is_available %} 
+                      <button class="btn disabled" name=" disabled add to cart button"> Add to Cart</button>
+                    {% else %}
+                      <button type="submit" name="add to cart button" class="btn" id="addToCartButton" >
+                        Add to Cart
+                      </button>
+                    {% endif %}
+
+                      <button id="addToWishlistButton" name="add to wishlist button" class="btn btn-invert" >Add to Wishlist</button>
+                  </div>
+
+            </div>
+      </div>
+    </div>
+  </div>
+    <br>
+  <div class="row description">
+    <div class="col-xl-12  my-5">
+      <div class="nav-align-top mb-4">
+        <ul class="nav nav-tabs" role="tablist">
+          <li class="nav-item">
+            <button type="button" name="about tab button" class="nav-link active text-uppercase" role="tab" data-bs-toggle="tab"
+              data-bs-target="#navs-top-description" aria-controls="navs-top-description" aria-selected="true">
+              About
+            </button>
+          </li>
+          <li class="nav-item">
+            <button type="button" name="specification tab button" class="nav-link text-uppercase" role="tab" data-bs-toggle="tab"
+              data-bs-target="#navs-top-details" aria-controls="navs-top-details" aria-selected="false">
+              Specification
+            </button>
+          </li>
+          <li class="nav-item">
+            <button type="button" name="policy tab button" class="nav-link text-uppercase" role="tab" data-bs-toggle="tab"
+              data-bs-target="#navs-top-policy" aria-controls="navs-top-policy" aria-selected="false">
+              Policy
+            </button>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade show active border-start border-end border-bottom" id="navs-top-description"
+            role="tabpanel">
+            <p class="px-3 pb-3 lh-lg" style="white-space: pre-wrap;">
+              {{ product.description }}
+            </p>
+          </div>
+          <div class="tab-pane fade border-start border-end border-bottom" id="navs-top-details" role="tabpanel">
+            <ul class="list-unstyled specification-list px-2 pb-2 pt-4">
+              <li>ISBN : {{ product.isbn }} </li>
+              <li>Publisher : {{ product.Publisher }} </li>
+              <li>Released Date : {{ product.release_date }} </li>
+              <li>Language : {{ product.language }} </li>
+              <li>Number of Pages : {{ product.number_of_pages }} </li>
+              <li>Height : {{ product.height }} </li>
+              <li>Weight : {{ product.weight }} </li>
+              <li>Spine Width : {{ product.spine_width }} </li>
+            </ul>
+          </div>
+          <div class="tab-pane fade border-start border-end border-bottom pb-3" id="navs-top-policy" role="tabpanel">
+            <p class=" px-3 pb-1 pt-4 lh-lg">
+              SHIPPING COSTS: The shipping cost upon checkout may vary depending on external and uncontrollable
+              circumstances. It might change anytime after the order has been placed. Our support team will contact
+              you in case of changes in shipping fees.
+            </p>
+
+            <p class=" px-3 py-1 lh-lg">
+              RETURN POLICY: Returns will only be honored if you have received a wrong item. However, we cannot
+              grant return requests if you have received the right item based on your order. Cancellations and
+              change in order will only be accepted within 24 hours after the order has been placed.
+            </p>
+
+            <p class=" px-3 py-1 lh-lg">
+              CANCELLATION FEES: Once the order has been placed, you can request a refund within 24 hours of
+              purchase. Beyond this timeframe and you requested a refund, we have to deduct 10% cancellation fee in
+              every order (computations are made based on SRP not including the shipping.) Please take note that
+              this policy also covers trade customers.
+            </p>
+
+            <p class=" px-3 py-1 lh-lg">In case of FREIGHT DAMAGE, please refer to this page.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- review and ratings -->
+  <span class="anchor" id="reviewRating"></span>
+  <div class="row" >
+    <div class="col-md-12 my-4 reivew">
+      
+      
+      <div class="col-12 col-md-6 write-review" >
+        <form action="{% url 'review' product.id %}" method="POST">
+          {% csrf_token %}
+          <h5>Write Your Review</h5>
+          <div>
+            <!--Rating stars -->
+            <label>Rate this Product </label>
+            <br>
+            <div class="rate mt-1 mb-2">
+              <input type="radio" name="rating" id="rating10" value="5" required><label for="rating10" title="5"></label>
+              <input type="radio" name="rating" id="rating9" value="4.5" required><label for="rating9" title="4.5"
+                class="half"></label>
+              <input type="radio" name="rating" id="rating8" value="4" required><label for="rating8" title="4"></label>
+              <input type="radio" name="rating" id="rating7" value="3.5" required><label for="rating7" title="3.5"
+                class="half"></label>
+              <input type="radio" name="rating" id="rating6" value="3" required><label for="rating6" title="3"></label>
+              <input type="radio" name="rating" id="rating5" value="2.5" required><label for="rating5" title="2.5"
+                class="half"></label>
+              <input type="radio" name="rating" id="rating4" value="2" required><label for="rating4" title="2"></label>
+              <input type="radio" name="rating" id="rating3" value="1.5" required><label for="rating3" title="1.5"
+                class="half"></label>
+              <input type="radio" name="rating" id="rating2" value="1" required><label for="rating2" title="1"></label>
+              <input type="radio" name="rating" id="rating1" value="0.5" required><label for="rating1" title="0.5"
+                class="half"></label>
+            </div>
+            <br>
+            <label>Write down your review below </label>
+            <br>
+            <div class="form-floating mb-3 mt-3">
+              <input type="text" class="form-control "  name='title' id="floatingTitle" placeholder=" " required minlength="2">
+              <label for="floatingTitle">Title
+                <span class="text-danger"><small> *</small></span>
+              </label>
+            </div>
+            <div class="form-floating mb-4">
+              <textarea class="form-control" name='review' placeholder="Your Review" id="floatingTextarea"
+                style="height: 200px"></textarea>
+              <label for="floatingTextarea">Your Review</label>
+            </div>
+            {% if request.user.is_authenticated %}
+              {% if is_ordered %}
+                {% if is_already_reviewed %}
+                  <div class="text-end">
+                    <input type="submit" value="Update Existing Review" class="btn ">
+                  </div>
+                {% else %}
+                  <div class="text-end">
+                    <input type="submit" value="Submit" class="btn ">
+                  </div>
+                {% endif%}
+              {% else %}
+                <p>You must purchase the product to write a Review!</p>
+              {% endif %}
+            {% else %}
+              <p>You must Be Sign In to write a Review! Please <span><a href="{% url 'login' %}">Login</a></span></p>
+            {% endif %}
+          </div>
+        </form>
+        <br>
+      </div>
+        
+      
+      <div class="col-md-6 customer-review">
+        <header class="section-heading mb-4">
+          <h5>Customer Reviews </h5>
+          <div class="rating-star">
+            <span>
+              <i class="fa fa-star{% if product.average_review < 0.5 %}-o{% elif product.average_review >= 0.5 and product.average_review < 1 %}-half-o {% endif %}"
+                aria-hidden="true"></i>
+              <i class="fa fa-star{% if product.average_review < 1.5 %}-o{% elif product.average_review >= 1.5 and product.average_review < 2 %}-half-o {% endif %}"
+                aria-hidden="true"></i>
+              <i class="fa fa-star{% if product.average_review < 2.5 %}-o{% elif product.average_review >= 2.5 and product.average_review < 3 %}-half-o {% endif %}"
+                aria-hidden="true"></i>
+              <i class="fa fa-star{% if product.average_review < 3.5 %}-o{% elif product.average_review >= 3.5 and product.average_review < 4 %}-half-o {% endif %}"
+                aria-hidden="true"></i>
+              <i class="fa fa-star{% if product.average_review < 4.5 %}-o{% elif product.average_review >= 4.5 and product.average_review < 5 %}-half-o {% endif %}"
+                aria-hidden="true"></i>
+            </span>
+            <span class="text-muted">
+              ( {{ product.review_count}} {% if product.review_count == 1 %} Rating {% else %} Ratings {% endif %} )
+            </span>
+          </div>
+        </header>
+        {% if reviews %}
+        {% for review in reviews %}
+        <article class="box pt-2 mt-3 pb-3 border-top">
+          <div class="icontext w-100">
+            <div class="text">
+              <div class="d-flex justify-content-between">
+                <div class="h6 mb-1">{{review.user.full_name}} </div>
+                <div class="date text-muted ">{{review.updated_date | date }}</div>
+              </div>
+              <div class="d-flex justify-content-between">
+                <div class="rating-star">
+                  <span>
+                    <i class="fa fa-star{% if review.rating == 0.5 %}-half-o{% elif review.rating < 1 %}-o {% endif %}"
+                      aria-hidden="true"></i>
+                    <i class="fa fa-star{% if review.rating == 1.5 %}-half-o{% elif review.rating < 2 %}-o {% endif %}"
+                      aria-hidden="true"></i>
+                    <i class="fa fa-star{% if review.rating == 2.5 %}-half-o{% elif review.rating < 3 %}-o {% endif %}"
+                      aria-hidden="true"></i>
+                    <i class="fa fa-star{% if review.rating == 3.5 %}-half-o{% elif review.rating < 4 %}-o {% endif %}"
+                      aria-hidden="true"></i>
+                    <i class="fa fa-star{% if review.rating == 4.5 %}-half-o{% elif review.rating < 5 %}-o {% endif %}"
+                      aria-hidden="true"></i>
+                </div>
+                <div>
+                  {% if request.user.is_authenticated %}
+                  {% if review.user == request.user %}
+                  <div class="text-end text-muted small">
+                    <a onclick="deleteReview(event, '{{ product.name }}')" href="{% url 'delete-review' product.id %}" title="Delete this review" style="color: inherit; text-decoration: none;">Delete</a>
+                  </div>
+                  {% endif %}
+                  {% endif %}
+                </div>
+              </div>
+              
+            </div>
+          </div>
+          <div class="mt-3">
+            <h6>{{review.title}}</h6>
+            <p>{{review.review}}</p>
+          </div>
+        </article>
+        {% endfor %}
+        {% else %}
+        <p class="mt-2">You will be the first one to review this product</p>
+        {% endif %}
+      </div>
+      
+    </div>
+  </div>
+  <!-- /review and ratings -->
+</div>
+</div>
+
+
+{% endblock %}
+
+
+{% block script %}
+
+<script>
+
+  function deleteReview(ev, name) {
+    ev.preventDefault();
+    var urlToRedirect = ev.currentTarget.getAttribute('href');
+    console.log(urlToRedirect);
+    swal({
+      title: "Are you sure?",
+      text: ("Are you sure that you want to delete your review of " + name + " ? You cannot undo this later!"),
+      // icon: "warning",
+      className: 'swal-custom',
+      buttons: true,
+      dangerMode: true,
+    })
+      .then((willDelete) => {
+        if (willDelete) {
+          window.location.href = urlToRedirect;
+        }
+      });
+  }
+
+
+
+  $(document).ready(function () {
+
+    $('#addToCartButton').click(function (e) {
+      e.preventDefault();
+
+      var format = $(".variation-option:checked").val();
+
+      $.ajax({
+        method: "POST",
+        url: "{% url 'add-to-cart' product.id %}",
+        data: {
+          'format' : format,
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+        },
+        dataType: "json",
+        success: function (response) {
+          current_cart_count = $('#cartCountBadge').text()
+          new_cart_count = parseInt(current_cart_count) + 1
+          $('#cartCountBadge').attr("style", "display: block !important");
+          document.getElementById('cartCountBadge').innerHTML = new_cart_count
+
+          // $('#addToCartButton').html('Go To Cart');
+          // $('#addToCartButton').href('/cart/');
+          var href = "/cart/"
+          var content = 'Go To Cart'
+          $("#addToCartButton").replaceWith("<a class='btn pt-2 d-flex justify-content-center align-items-center' href=\"" + href + "\">" + content + "</a>");
+
+          $(document).ready(function () {
+          $('.toast').toast('show');
+          });
+        }
+      });
+    });
+
+    
+  });
+  
+
+  $(document).ready(function () {
+    $('#addToWishlistButton').click(function (e) {
+      e.preventDefault();
+
+      '{% if request.user.is_authenticated %}'
+        $.ajax({
+          method: "GET",
+          url: "{% url 'add-to-wishlist' product.id %}",
+          dataType: "json",
+          success: function (response) {
+            $(document).ready(function () {
+              $('.toast').toast('show');
+            });
+          }
+        });
+      '{% else %}'
+        window.location.href = '{% url "login" %}'
+      '{% endif %}'
+    });
+    
+  });
+  
+
+</script>
+
+<!-- drift script -->
+
+<script src="{% static 'scripts/product-view.js' %}"></script>
+
+{% endblock %}

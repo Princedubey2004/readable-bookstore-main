@@ -1,0 +1,394 @@
+{% extends 'administrator/layout.html' %}
+
+{% load static %}
+
+{% block title %}
+<title>Admin dashboard</title>
+{% endblock %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+<!-- Content wrapper -->
+<div class="content-wrapper">
+  <!-- Content -->
+
+  <div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+      <!-- Total Revenue -->
+      <div class="col-12 col-lg-8  mb-4">
+        <div class="card">
+          <div class="row row-bordered g-0">
+            <div class="col-md-12">
+              <h5 class="card-header m-0 me-2 pb-3">Total Sales</h5>
+              <div id="totalRevenueChart" class="px-2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--/ Total Revenue -->
+      <div class="col-lg-4 col-md-4 ">
+        <div class="row">
+          
+          <div class="col-lg-12 col-12 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-start justify-content-between">
+                  <div>
+                    <span class="d-block fw-semibold mb-3">Sales</span>
+                    <h3 class="card-title text-nowrap mb-1"> &#8377; {{total_order_amount}}</h3>
+                    {% if total_order_amount_today > 0 %}
+                    <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i> &#8377; {{total_order_amount_today}}</small>
+                    {% else %}
+                    <small class="text-primary fw-semibold"><i class="bx bx-right-arrow-alt"></i> &#8377; 0 </small>
+                    {% endif %}
+                  </div>
+                  <div class="avatar flex-shrink-0">
+                    <img src="../../static/admin/assets/img/icons/unicons/wallet-info.png" alt="Credit Card" class="rounded" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-12 col-12 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-start justify-content-between">
+                  <div>
+                    <span class="fw-semibold d-block mb-3">Active Users</span>
+                    <h3 class="card-title mb-2">{{active_users_count}}</h3>
+                    {% if new_users_today > 0 %}
+                    <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i> {{new_users_today}}</small>
+                    {% else %}
+                    <small class="text-primary fw-semibold"><i class="bx bx-right-arrow-alt"></i> 0 </small>
+                    {% endif %}
+                    <span class="fw-semibold d-block mt-2">Total Users : {{ total_users_count }}</span>
+                    <span class="fw-semibold d-block mt-2">Inactive Users : {{ non_active_users_count }}</span>
+          
+                  </div>
+                  <div class="avatar flex-shrink-0">
+                    <img src="../../static/admin/assets/img/icons/unicons/chart-success.png" alt="chart success"
+                      class="rounded" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-12 col-md-8 col-lg-4">
+        <div class="row">
+          <div class="col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-start justify-content-between">
+                  <div class="avatar text-info">
+                    <i class='bx bxs-user-check' style="font-size: 2.2em;"></i>
+                  </div>
+                </div>
+                <span class="d-block mb-1">Subscribers</span>
+                <h3 class="card-title text-nowrap mb-2">{{ subscribers_count }}</h3>
+                {% if new_subscribers_today > 0 %}
+                <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i> {{new_subscribers_today}}</small>
+                {% else %}
+                <small class="text-primary fw-semibold"><i class="bx bx-right-arrow-alt"></i> 0 </small>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-start justify-content-between">
+                  <div class="avatar text-success">
+                     <i class='bx bx-package' style="font-size: 2.2em;"></i>
+                  </div>
+                  
+                </div>
+                <span class="fw-semibold d-block mb-1">Orders</span>
+                <h3 class="card-title mb-2">{{total_orders_count}}</h3>
+                {% if new_orders_today > 0 %}
+                <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i> {{new_orders_today}}</small>
+                {% else %}
+                <small class="text-primary fw-semibold"><i class="bx bx-right-arrow-alt"></i> 0 </small>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-8 col-lg-4">
+        <div class="row">
+          <div class="col-12 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-start justify-content-between">
+                  <div>
+                    <span class="d-block mb-1">Products</span>
+                    <h3 class="card-title text-nowrap mb-2">{{ total_products_count }}</h3>
+                    <small class="fw-semibold d-block mb-2">Total Stock : {{total_products_stock}}</small>
+                    <small class="fw-semibold d-block mb-2">Low Stock Items : {{low_stock_items}}</small>
+                    <small class="fw-semibold d-block mb-0">Out of Stock Items : {{out_of_stock_items}}</small>
+                  </div>
+                  <div class="avatar text-danger">
+                    <i class='bx bxs-book-alt' style="font-size: 2.2em;"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-8 col-lg-4">
+        <div class="row">
+          <div class="col-12 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title d-flex align-items-start justify-content-between">
+                  <div>
+                    <span class="d-block mb-1">Languages Availble</span>
+                    <h3 class="card-title text-nowrap mb-4">{{ total_languages }}</h3>
+                    <small class="fw-semibold d-block mb-2">Total Categories : {{total_categories}}</small>
+                    <small class="fw-semibold d-block mb-1">Total Subcategories : {{total_subcategories}}</small>
+                  </div>
+                  <div class="avatar flex-shrink-0 text-primary">
+                    <i class='bx bxs-category-alt' style="font-size: 2.2em;"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <!-- Order Statistics -->
+      <div class="col-12 col-lg-6 order-0 mb-4">
+        <div class="card h-100">
+          <div class="card-header d-flex align-items-center justify-content-between pb-0">
+            <div class="card-title mb-0">
+              <h5 class="m-0 me-2">Order Statistics</h5>
+              <small class="text-muted">{{total_order_amount}} Total Sales</small>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="d-flex flex-column align-items-center gap-1">
+                <h2 class="mb-2">{{total_orders_count}}</h2>
+                <span>Total Orders</span>
+              </div>
+            </div>
+              <div id="orderStatisticsChart" class="w-100 px-5"></div>
+          </div>
+        </div>
+      </div>
+      <!--/ Order Statistics -->
+
+      <!-- Transactions -->
+      <div class="col-12 col-lg-6 order-2 mb-4">
+        <div class="card h-100">
+          <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="card-title m-0 me-2">Transactions</h5>
+          </div>
+          <div class="card-body">
+            <ul class="p-0 m-0">
+              <li class="d-flex mb-4 pb-1">
+                <div class="avatar flex-shrink-0 me-3">
+                  <img src="../../static/admin/assets/img/icons/unicons/cc-warning.png" alt="User" class="rounded" />
+                </div>
+                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                  <div class="me-2">
+                    <small class="text-muted d-block mb-1">Total Transaction</small>
+                    <h6 class="mb-0">Money Recieved</h6>
+                  </div>
+                  <div class="user-progress d-flex align-items-center gap-1">
+                    <h6 class="mb-0">{{all_transactions}}</h6>
+                    <span class="text-muted">INR</span>
+                  </div>
+                </div>
+              </li>
+              
+              <li class="d-flex mb-4 pb-1">
+                <div class="avatar flex-shrink-0 me-3">
+                  <img src="../../static/admin/assets/img/icons/unicons/wallet.png" alt="User" class="rounded" />
+                </div>
+                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                  <div class="me-2">
+                    <small class="text-muted d-block mb-1">Online Transactions</small>
+                    <h6 class="mb-0">Razorpay</h6>
+                  </div>
+                  <div class="user-progress d-flex align-items-center gap-1">
+                    <h6 class="mb-0">{{razorpay_transactions}}</h6>
+                    <span class="text-muted">INR</span>
+                  </div>
+                </div>
+              </li>
+              <li class="d-flex mb-4 pb-1">
+                <div class="avatar flex-shrink-0 me-3">
+                  <img src="../../static/admin/assets/img/icons/unicons/chart.png" alt="User" class="rounded" />
+                </div>
+                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                  <div class="me-2">
+                    <small class="text-muted d-block mb-1">Pay On Delivery</small>
+                    <h6 class="mb-0">Recieved Money</h6>
+                  </div>
+                  <div class="user-progress d-flex align-items-center gap-1">
+                    <h6 class="mb-0">{{pay_on_delivery_transactions}}</h6>
+                    <span class="text-muted">INR</span>
+                  </div>
+                </div>
+              </li>
+              <li class="d-flex mb-4 pb-1">
+                <div class="avatar flex-shrink-0 me-3">
+                  <img src="../../static/admin/assets/img/icons/unicons/cc-success.png" alt="User" class="rounded" />
+                </div>
+                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                  <div class="me-2">
+                    <small class="text-muted d-block mb-1">Pay On Delivery</small>
+                    <h6 class="mb-0">Expected Transactions</h6>
+                  </div>
+                  <div class="user-progress d-flex align-items-center gap-1">
+                    <h6 class="mb-0">{{pending_transactions}}</h6>
+                    <span class="text-muted">INR</span>
+                  </div>
+                </div>
+              </li>
+              <li class="d-flex  mb-4 pb-1">
+                <div class="avatar flex-shrink-0 me-3">
+                  <img src="../../static/admin/assets/img/icons/unicons/wallet.png" alt="User" class="rounded" />
+                </div>
+                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                  <div class="me-2">
+                    <small class="text-muted d-block mb-1">Cancel and Refunds</small>
+                    <h6 class="mb-0">Refunds</h6>
+                  </div>
+                  <div class="user-progress d-flex align-items-center gap-1">
+                    <h6 class="mb-0">-{{refunds}}</h6>
+                    <span class="text-muted">INR</span>
+                  </div>
+                </div>
+              </li>
+              <li class="d-flex">
+                <div class="avatar flex-shrink-0 me-3">
+                  <img src="../../static/admin/assets/img/icons/unicons/paypal.png" alt="User" class="rounded" />
+                </div>
+                <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                  <div class="me-2">
+                    <small class="text-muted d-block mb-1">Total Transactions</small>
+                    <h6 class="mb-0">Net Amount</h6>
+                  </div>
+                  <div class="user-progress d-flex align-items-center gap-1">
+                    <h6 class="mb-0">{{all_successful_transactions}}</h6>
+                    <span class="text-muted">INR</span>
+                  </div>
+                </div>
+              </li>
+              
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!--/ Transactions -->
+    </div>
+
+    <!-- order statitics -->
+    <div class="col-12  ">
+      <div class="row">
+        <div class="col-12 col-lg-2 col-md-4 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="card-title d-flex align-items-start justify-content-between">
+                <div class="avatar text-info">
+                  <i class='bx bxs-time' style="font-size: 2.2em;"></i>
+                </div>
+              </div>
+              <span class="d-block mb-1">Orders Processing</span>
+              <h3 class="card-title text-nowrap mb-2">{{ placed_orders_count }}</h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-2 col-md-4 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="card-title d-flex align-items-start justify-content-between">
+                <div class="avatar text-primary">
+                  <i class='bx bxs-truck' style="font-size: 2.2em;"></i>
+                </div>
+              </div>
+              <span class="d-block mb-1">Orders Shipped</span>
+              <h3 class="card-title text-nowrap mb-2">{{ shipped_orders_count }}</h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-2 col-md-4 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="card-title d-flex align-items-start justify-content-between">
+                <div class="avatar text-info">
+                  <i class='bx bxs-home-circle' style="font-size: 2.2em;"></i>
+                </div>
+              </div>
+              <span class="d-block mb-1">Orders Out for Delivery</span>
+              <h3 class="card-title text-nowrap mb-2">{{ out_for_delivery_orders_count }}</h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-2 col-md-4 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="card-title d-flex align-items-start justify-content-between">
+                <div class="avatar text-success">
+                  <i class='bx bxs-donate-heart' style="font-size: 2.2em;"></i>
+                </div>
+              </div>
+              <span class="d-block mb-1">Orders Delivered</span>
+              <h3 class="card-title text-nowrap mb-2">{{ delivered_orders_count }}</h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-2 col-md-4 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="card-title d-flex align-items-start justify-content-between">
+                <div class="avatar text-danger">
+                  <i class='bx bx-x' style="font-size: 2.2em;"></i>
+                </div>
+              </div>
+              <span class="d-block mb-1">Orders Cancelled</span>
+              <h3 class="card-title text-nowrap mb-2">{{ cancelled_orders_count }}</h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-2 col-md-4 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="card-title d-flex align-items-start justify-content-between">
+                <div class="avatar text-warning">
+                  <i class='bx bx-undo' style="font-size: 2.2em;"></i>
+                </div>
+              </div>
+              <span class="d-block mb-1">Orders Returned</span>
+              <h3 class="card-title text-nowrap mb-2">{{ returned_orders_count }}</h3>
+            </div>
+          </div>
+        </div>
+    </div>
+    <!-- order statitics -->
+  </div>
+  <!-- / Content -->
+
+  {% endblock %}
+
+  {% block script %}
+
+  <script>
+    var last_week_sale = JSON.parse('{{ last_week_sale | safe }}')
+    var weekday_list = JSON.parse('{{ weekday_list | safe }}')
+    var sorted_products_by_sales = JSON.parse('{{ sorted_products_by_sales | safe }}')
+    var sorted_product_quantity_by_sales = JSON.parse('{{ sorted_product_quantity_by_sales | safe }}')
+  </script>
+
+  {% endblock %}

@@ -1,0 +1,331 @@
+{% extends 'administrator/layout.html' %}
+{% load static %}
+
+{% block title %}
+
+{% endblock %}
+
+
+
+{% block head %}
+
+<style>
+  ul li{
+    float: left;
+  }
+  .custom-align div{
+    margin-top: auto !important;
+    margin-bottom: auto !important;
+  }
+  tbody td {
+    line-height: 2.4rem !important;
+  }
+  /* tbody tr[aria-expanded="true"] {
+    background-color: #697a8d45;
+  } */
+</style>
+
+{% endblock %}
+
+
+
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class="d-flex justify-content-between ">
+    <h6 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Home / Order Mangement / </span>
+      {% if request.path == '/administrator/order-management/' %} All Orders
+      {% endif %}
+
+      {% for status in statuses %}
+      {% if status in request.path %} {{status}} orders
+      {% endif %}
+      {% endfor %}
+    </h6>
+  </div>
+
+  {% if 'search' in request.path %}
+  <div class="col-12 text-center mb-5">
+    <h4 class="search-heading fw-normal">SEARCH RESULTS</h4>
+    <p class="text-muted">{{ orders_count }} items found for keyword '{{ request.GET.keyword }}'</p>
+  </div>
+  {% endif %}
+
+{% if orders %}
+  
+<div class="card mt-5">
+  <h5 class="card-header">
+    {% if request.path == '/administrator/order-management/' %} All Orders
+    {% elif 'placed-orders' in request.path %} Placed Orders
+    {% elif 'pending-orders' in request.path %} Pending Orders
+    {% elif 'cancelled-orders' in request.path %} Cancelled Orders 
+    {% elif 'completed-orders' in request.path %} Completed Orders
+    {% elif 'closed-orders' in request.path %} Closed Orders
+    {% endif %}
+    
+  </h5>
+  <div class="table-responsive text-nowrap">
+    <table class="table table-hover" id="user_table">
+      <thead>
+        <tr>
+          <th>SN</th>
+          <th>Order ID</th>
+          <th>User</th>
+          <th>Date</th>
+          <th>Total</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="accordionExample">
+        {% for order in orders %}
+
+        <tr class="" data-bs-toggle="collapse" data-bs-target="#accordion-{{ order.order_id }}" aria-expanded="true"
+          aria-controls="accordion-{{ order.order_id }}">
+          <td><span class="name">{{ forloop.counter }}</span></td>
+          <td>
+            <span class="email ">{{ order.order_id }}</span>
+          </td>
+          <td><span class="name">{{ order.user.full_name }}</span></td>
+          <td><span class="name">{{ order.created_date | date}}</span></td>
+          <td><span class="name">{{ order.order_total}}0</span></td>
+          <td>
+            <span
+              class="name {% if order.status == 'Placed' %} text-primary {% elif order.status == 'Pending' or order.status == 'Returned' or order.status == 'Processing' %} text-warning {% elif order.status == 'Cancelled' or order.status == 'Return Confirmed' %}  text-danger {% elif order.status == 'Shipped' %} text-info {% elif order.status == 'Delivered'  %} text-success {% endif %}"
+              id="status-{{ order.id }}">{{ order.status }}
+            </span>
+            {% if order.status == 'Pending' or order.status == 'Placed' or order.status == 'Processing' or order.status == 'Shipped' or order.status == 'Out for Delivery' or order.status == 'Returned' %}
+            <button onclick="orderStatusUpdate(event, '{{ order.id }}')" value="{{ order.status }}" hidden
+              id="orderStatusUpdateButton-{{ order.id }}"></button>
+            <label for="orderStatusUpdateButton-{{ order.id }}" id="label-{{ order.id }}">
+              <iconify-icon icon="clarity:note-edit-line" width="16"></iconify-icon>
+            </label>
+            {% endif %}
+          </td>
+        </tr>
+
+        <tr>
+          <td colspan="6" class="py-0 ">
+            <div id="accordion-{{ order.order_id }}" class="accordion-collapse collapse"
+              data-bs-parent="#accordionExample">
+              <div class=" border my-3 p-3">
+                <div class="d-flex justify-content-between">
+                  <h6 class="text-uppercase">Order Details</h6>
+                </div>
+                {% for order_product in order_products %}
+                {% if order_product.order.id == order.id %}
+                <span class="custom-align list-unstyled list-inline d-flex justify-content-between my-2">
+                  <div class=" col-8 d-flex justify-content-start">
+                    <div>
+                      <span class="name me-3">
+                        <img src="{{ order_product.product.cover_image.url }}" alt="product image" height="75">
+                      </span>
+                    </div>
+                    <div>
+                      <span class="name ">Product ID : {{ order_product.product.id }}</span><br>
+                      <span class="name ">{{ order_product.product.name }}</span> <br>
+                      {% for item in order_product.variation.all %}
+                      <span class="name">{{ item.variation_value }}</span>
+                      {% endfor %}
+
+                    </div>
+                  </div>
+
+
+                  <div class="col-2 text-end"><span class="name">{{ order_product.quantity }} x {{ order_product.offer_price }}</span></div>
+                  <div class="col-2 text-end"><span class="name">{{ order_product.total }}0</span></div>
+                  
+                </span>
+                {% endif %}
+                {% endfor %}
+              </div>
+              <div class="my-3 border p-3">
+                <h6 class="text-uppercase">Shipping & Payment Details</h6>
+                <span class="custom-align list-unstyled list-inline d-flex justify-content-between my-2">
+                  <div class="d-flex justify-content-start">
+                    <div>
+                      <span class="name ">{{ order.address.full_name }}</span> <br>
+                      <span class="name ">{{ order.address.address }}</span><br>
+                      <span class="name ">{{ order.address.details }}</span> <br><br>
+                      <span class="name ">{{ order.shipping_method | capfirst }} Shipping</span>
+                    </div>
+                  </div>
+
+
+                  <div><span class="name">{{ order.payment.payment_method }}</span></div>
+                  <div><span class="name">{{ order.payment.payment_id }}</span></div>
+                  <div><span class="name">{{ order.payment.amount }}</span></div>
+                  <div><span class="name" id="payment-status-{{order.id}}">{{ order.payment.status }}</span></div>
+                </span>
+                <div class="col-12 px-0">
+                  <div class="d-flex justify-content-start">
+                    <div class=" pt-5 w-100">
+                      <div class="pt-2">
+                        <div class="d-flex justify-content-between">
+                          <p>Subtotal MRP</p>
+                          <p>₹ {{ order.gross_amount }}.00</p>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                          <p>Discount on MRP</p>
+                          <p class="text-success">- ₹ {{ order.discount }}.00</p>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                          <p>Coupen Discount</p>
+                          <p class="text-success">- ₹ {{ order.coupon_discount }}.00</p>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                          <p>Shipping and Handling</p>
+                          {% if order.shipping_charge %}
+                          <p>₹ {{order.shipping_charge}}.00</p>
+                          {% else %}
+                          <p class="text-success">Free Delivery</p>
+                          {% endif %}
+                        </div>
+                      </div>
+                      <div class="border-top pt-3 mt-2">
+                        <div class="d-flex justify-content-between">
+                          <h6 class="mb-0">TOTAL</h6>
+                          <h6 class="mb-0">₹ {{order.order_total}}0</h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        {% endfor %}
+
+
+      </tbody>
+    </table>
+  </div>
+</div>
+  
+{% else %}
+
+<div class="card mt-5 py-5">
+  <h4 class="card-header text-center"> Empty!</h4>
+  <h5 class="card-header text-center"> No 
+      {% for status in statuses %}
+      {% if status in request.path  %} {{status}}
+      {% endif %}
+      {% endfor %} Orders
+
+  </h5>
+</div>
+
+{% endif %}
+
+</div>
+
+<!-- paginator -->
+<nav aria-label="Page navigation example">
+  {% if orders.has_other_pages %}
+  <ul class="pagination justify-content-center">
+    {% if orders.has_previous %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ orders.previous_page_number}}" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="#" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+    {% endif %}
+
+    {% for i in orders.paginator.page_range%}
+    {% if orders.number == i %}
+    <li class="page-item active"><a class="page-link" href="#">{{i}}</a></li>
+    {% else %}
+    <li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
+    {% endif %}
+    {% endfor %}
+
+    {% if orders.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ orders.next_page_number}}" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="#" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+    {% endif %}
+  </ul>
+  {% endif %}
+</nav>
+
+
+{% endblock %}
+
+
+
+{% block script %}
+
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  async function orderStatusUpdate(ev, id){
+    const currentStatus = document.getElementById('status-' + id).innerText
+
+    var options = {};
+    if (currentStatus.trim() == 'Pending') {
+      options['Cancelled'] = 'Cancelled';
+    } else if (currentStatus.trim() == 'Placed') {
+      options['Processing'] = 'Processing';
+      options['Shipped'] = 'Shipped';
+    } else if (currentStatus.trim() == 'Processing') {
+      options['Shipped'] = 'Shipped';
+    } else if (currentStatus.trim() == 'Shipped') {
+      options['Out for Delivery'] = 'Out for Delivery';
+    } else if (currentStatus.trim() == 'Out for Delivery') {
+      options['Delivered'] = 'Delivered';
+      options['Cancelled'] = 'Cancelled';
+    } else if (currentStatus.trim() == 'Returned') {
+      options['Return Confirmed'] = 'Return Confirmed';
+    };
+    console.log(options)
+    const { value: status } = await Swal.fire({
+      title: 'Select Order Status',
+      input: 'select',
+      inputOptions: options,
+      inputValue: currentStatus,
+      showCancelButton: true,
+    })
+
+    data = {
+      "order_status": status,
+    }
+    $.ajax({
+      method: "GET",
+      url: "/administrator/order-management/update-order-status/" +id,
+      data: data,
+      success: function (response) {
+
+        swal(response.status, {
+          timer: 3000,
+        }).then((value) => {
+          const statusDiv = document.getElementById('status-' +id);
+          statusDiv.textContent = status;
+          if (status == 'Cancelled' || status == 'Return Confirmed' || status == 'Delivered'){
+            const label = document.getElementById('label-' + id);
+            label.setAttribute("hidden", true);
+          }
+          
+        });
+      }
+    });
+  }
+
+
+</script>
+
+{% endblock %}

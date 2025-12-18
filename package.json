@@ -1,0 +1,13 @@
+{
+  "name": "readable-bookstore-main",
+  "version": "1.0.0",
+  "description": "<!-- PROJECT LOGO --> <br /> <div align=\"center\">   <a href=\"https://github.com/jauharmuhammed/README-template\">     <img src=\"https://github.com/Jauharmuhammed/readable-bookstore/blob/main/static/images/readable-icon-black-1.jpg\" alt=\"Logo\" width=\"80\" height=\"80\" border-radius=\"50%\">   </a>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

@@ -1,0 +1,8 @@
+{% for message in messages %}
+<div class="notification toast  bg-{% if message.tags == 'error' %}danger{% else %}{{message.tags}}{% endif %}"
+  role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000">
+  <div class="toast-body text-center ">
+    {{message|safe}}
+  </div>
+</div>
+{% endfor %}

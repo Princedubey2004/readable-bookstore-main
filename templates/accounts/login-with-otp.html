@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block head %}
+
+    <title>login</title>
+    <link href="{% static 'styles/login.css' %}" rel="stylesheet">
+
+{% endblock %}
+
+
+{% block body %}
+
+    
+    <main class="container vh-100 d-flex justify-content-center align-items-center ">
+      <div class="form-signin ">
+          <form action="" method="POST">
+              {% csrf_token %}
+              <h2 class="mb-5 text-center">Login with OTP</h2>
+      
+      
+              <div class="form-floating">
+                  <input type="text" class="form-control " 
+                    name='mobile_number' maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"
+                    id="floatingInput" placeholder=" ">
+                  <label for="floatingInput">Mobile Number
+                    <span class="text-danger"><small> *</small></span>
+                  </label>
+              </div>
+
+
+              {% if messages %}
+                  {% for message in messages %}
+                      <p {% if message.tags %}
+                          class="text-{{ message.tags }} text-center pb-3"
+                      {% endif %} id="message">{{ message }}</p>
+                  {% endfor %}
+              {% endif %}
+      
+              <button class="w-100  btn py-2" type="submit">Send OTP</button>
+              
+              <p class="text-center pt-4">Login with email. go to <a href="{% url 'login' %}">Login</a> page</p>
+          </form>
+        </div>
+      </main>
+
+{% endblock %}
